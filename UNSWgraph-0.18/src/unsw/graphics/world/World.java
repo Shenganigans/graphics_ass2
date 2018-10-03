@@ -44,13 +44,13 @@ public class World extends Application3D implements KeyListener {
     float rotationY = 0;
     float rotationX = 0;
     static ArrayList<Tree> allTrees;
-//    private Camera3D camera;
+    private Camera3D camera;
     private boolean useCamera;
 
     public World(Terrain terrain) {
         super("Assignment 2", 800, 600);
         this.terrain = terrain;
-//        camera = new Camera3D();
+        camera = new Camera3D(terrain);
 
     }
 
@@ -79,7 +79,7 @@ public class World extends Application3D implements KeyListener {
             drawTerrain(gl, frame1);
         } else {
             // Use a camera instead
-//            camera.setView(gl);
+            camera.setView(gl);
             frame = CoordFrame3D.identity();
             drawTerrain(gl,frame);
         }
@@ -110,7 +110,7 @@ public class World extends Application3D implements KeyListener {
     public void init(GL3 gl) {
         super.init(gl);
         getWindow().addKeyListener(this);
-//        getWindow().addKeyListener(camera);
+        getWindow().addKeyListener(camera);
         int i = 0;
         int j = 0;
         ArrayList<Point3D> points = new ArrayList<Point3D>();
@@ -129,8 +129,9 @@ public class World extends Application3D implements KeyListener {
                 indexes.add(i+(j+1)*terrain.getDepth()-1);
 
                 indexes.add(i+j*terrain.getDepth());
-                indexes.add(i+(j+1)*terrain.getDepth());
                 indexes.add(i+(j+1)*terrain.getDepth()-1);
+                indexes.add(i+(j+1)*terrain.getDepth());
+                
             }
         }
         int[] arr = new int[indexes.size()];
