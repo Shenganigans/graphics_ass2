@@ -85,8 +85,7 @@ public class World extends Application3D implements KeyListener {
             drawTerrain(gl,frame);
         }
 
-
-        //rotationY += 1;
+        rotationY += 1;
     }
 
     private void drawTerrain(GL3 gl, CoordFrame3D frame) {
@@ -102,12 +101,8 @@ public class World extends Application3D implements KeyListener {
         for (Tree t: terrain.trees()) {
             Point3D pos = t.getPosition();
             CoordFrame3D treeFrame = CoordFrame3D.identity().translate(pos.getX(), pos.getY(), pos.getZ()).scale(0.5f, 0.5f, 0.5f);
-            drawTree(gl, treeFrame);
+            treeMesh.draw(gl, treeFrame);
         }
-    }
-
-    private void drawTree(GL3 gl, CoordFrame3D frame) {
-        treeMesh.draw(gl, frame);
     }
 
     @Override
