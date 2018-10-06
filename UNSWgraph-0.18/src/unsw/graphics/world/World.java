@@ -44,6 +44,7 @@ public class World extends Application3D implements KeyListener {
     float rotationY = 0;
     float rotationX = 0;
     static ArrayList<Tree> allTrees;
+    private final static float TREEHEIGHT = 2.65f;
     private TriangleMesh treeMesh;
     private Camera3D camera;
     private boolean useCamera;
@@ -71,18 +72,32 @@ public class World extends Application3D implements KeyListener {
     public void display(GL3 gl) {
         super.display(gl);
         CoordFrame3D frame;
+
+        // set sunlight direction
+        Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
+
+        // set other light stuff
+        Shader.setColor(gl, "lightIntensity", Color.WHITE);
+        Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+
+        // Set the material properties
+        Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+        Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
+        Shader.setFloat(gl, "phongExp", 16f);
+
         if (!useCamera) {
             // Bring everything into view by scaling down the world
             Shader.setPenColor(gl, Color.BLACK);
             CoordFrame3D frame1 = CoordFrame3D.identity()
-                    .translate(-2, -0.9f, -9)
+                    .translate(-2, -2f, -9)
                     .scale(0.5f, 0.5f, 0.5f);
             drawTerrain(gl, frame1);
         } else {
             // Use a camera instead
             camera.setView(gl);
             frame = CoordFrame3D.identity();
-            drawTerrain(gl,frame);
+            drawTerrain(gl, frame);
         }
 
         rotationY += 1;
@@ -100,7 +115,7 @@ public class World extends Application3D implements KeyListener {
 
         for (Tree t: terrain.trees()) {
             Point3D pos = t.getPosition();
-            CoordFrame3D treeFrame = CoordFrame3D.identity().translate(pos.getX(), pos.getY(), pos.getZ()).scale(0.5f, 0.5f, 0.5f);
+            CoordFrame3D treeFrame = CoordFrame3D.identity().translate(pos.getX(), pos.getY() + TREEHEIGHT, pos.getZ()).scale(0.5f, 0.5f, 0.5f);
             treeMesh.draw(gl, treeFrame);
         }
     }
@@ -118,6 +133,13 @@ public class World extends Application3D implements KeyListener {
         super.init(gl);
         getWindow().addKeyListener(this);
         getWindow().addKeyListener(camera);
+
+        // shader
+        Shader shader = new Shader(gl, "shaders/vertex_sunlight.glsl",
+                "shaders/fragment_sunlight.glsl");
+        shader.use(gl);
+
+        // terrain
         int i = 0;
         int j = 0;
         ArrayList<Point3D> points = new ArrayList<Point3D>();
@@ -167,6 +189,7 @@ public class World extends Application3D implements KeyListener {
         terrainMesh = new TriangleMesh(points, indexes, true);
         terrainMesh.init(gl);
 
+        // tree
         try {
             treeMesh = new TriangleMesh("res/models/tree.ply", true, true);
         } catch (IOException e) {
