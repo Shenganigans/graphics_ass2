@@ -44,6 +44,7 @@ public class World extends Application3D implements KeyListener {
     float rotationY = 0;
     float rotationX = 0;
     static ArrayList<Tree> allTrees;
+    private TriangleMesh treeMesh;
     private Camera3D camera;
     private boolean useCamera;
 
@@ -97,6 +98,16 @@ public class World extends Application3D implements KeyListener {
         Shader.setModelMatrix(gl, frame.getMatrix());
         gl.glDrawElements(GL.GL_TRIANGLES, indicesBuffer.capacity(),
                 GL.GL_UNSIGNED_INT, 0);
+
+        for (Tree t: terrain.trees()) {
+            Point3D pos = t.getPosition();
+            CoordFrame3D treeFrame = CoordFrame3D.identity().translate(pos.getX(), pos.getY(), pos.getZ()).scale(0.5f, 0.5f, 0.5f);
+            drawTree(gl, treeFrame);
+        }
+    }
+
+    private void drawTree(GL3 gl, CoordFrame3D frame) {
+        treeMesh.draw(gl, frame);
     }
 
     @Override
@@ -104,6 +115,7 @@ public class World extends Application3D implements KeyListener {
         super.destroy(gl);
         gl.glDeleteBuffers(2, new int[] { indicesName, verticesName }, 0);
         terrainMesh.destroy(gl);
+        treeMesh.destroy(gl);
     }
 
     @Override
@@ -160,6 +172,13 @@ public class World extends Application3D implements KeyListener {
         terrainMesh = new TriangleMesh(points, indexes, true);
         terrainMesh.init(gl);
 
+        try {
+            treeMesh = new TriangleMesh("res/models/tree.ply", true, true);
+        } catch (IOException e) {
+            System.out.println("Tree Mesh failed to load :(");
+            System.out.println(e.toString());
+        }
+        treeMesh.init(gl);
     }
 
     @Override
