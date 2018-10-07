@@ -82,12 +82,11 @@ public class World extends Application3D implements KeyListener {
         Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
 
 //         set other light stuff
-          Shader.setColor(gl, "lightIntensity", Color.WHITE);
-          Shader.setColor(gl, "ambientIntensity", new Color(0.7f, 0.7f, 0.7f));
-         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
-          Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
-          Shader.setColor(gl, "specularCoeff", Color.BLACK);
-          Shader.setFloat(gl, "phongExp", 1f);
+        Shader.setColor(gl, "lightIntensity", Color.WHITE);
+        Shader.setColor(gl, "ambientIntensity", new Color(0.7f, 0.7f, 0.7f));
+        Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+        Shader.setFloat(gl, "phongExp", 1f);
 
         if (!useCamera) {
             // Bring everything into view by scaling down the world
@@ -117,6 +116,7 @@ public class World extends Application3D implements KeyListener {
                 GL.GL_UNSIGNED_INT, 0);
 
         for (Tree t: terrain.trees()) {
+            Shader.setPenColor(gl, Color.BLACK);
             Point3D pos = t.getPosition();
             CoordFrame3D treeFrame = CoordFrame3D.identity().translate(pos.getX(), pos.getY() + TREEHEIGHT, pos.getZ()).scale(0.5f, 0.5f, 0.5f);
             treeMesh.draw(gl, treeFrame);

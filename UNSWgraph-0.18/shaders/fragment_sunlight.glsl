@@ -13,7 +13,6 @@ uniform vec3 ambientIntensity;
 // Material properties
 uniform vec3 ambientCoeff;
 uniform vec3 diffuseCoeff;
-uniform vec3 specularCoeff;
 uniform float phongExp;
 
 uniform sampler2D tex;
@@ -32,13 +31,7 @@ void main()
 
     vec3 ambient = ambientIntensity*ambientCoeff;
     vec3 diffuse = max(lightIntensity*diffuseCoeff*dot(m,s), 0.0);
-    vec3 specular;
-
-    // Only show specular reflections for the front face
-    if (dot(m,s) > 0)
-        specular = max(lightIntensity*specularCoeff*pow(dot(r,v),phongExp), 0.0);
-    else
-        specular = vec3(0);
+    vec3 specular = vec3(0);
 
     vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
