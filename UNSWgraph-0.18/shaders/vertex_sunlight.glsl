@@ -8,10 +8,11 @@ uniform mat4 proj_matrix;
 
 out vec2 texCoordFrag;
 out vec4 viewPosition;
+out vec4 globalPosition;
 out vec3 m;
 
 void main (void) {
-    vec4 globalPosition = model_matrix * vec4(position, 1);
+    globalPosition = model_matrix * vec4(position, 1);
 
     // The position in camera coordinates
     viewPosition = view_matrix * globalPosition;
