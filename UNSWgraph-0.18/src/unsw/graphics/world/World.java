@@ -45,7 +45,7 @@ public class World extends Application3D implements KeyListener {
     float rotationY = 0;
     float rotationX = 0;
     static ArrayList<Tree> allTrees;
-    private final static float TREEHEIGHT = 2.65f;
+    private final static float TREEHEIGHT = 2.5f;
     private TriangleMesh treeMesh;
     private Camera3D camera;
     private boolean useCamera;
