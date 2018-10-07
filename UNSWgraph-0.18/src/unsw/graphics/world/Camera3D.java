@@ -27,7 +27,7 @@ public class Camera3D implements KeyListener {
     private Terrain myTerrain;
 
     public Camera3D(Terrain terrain) {
-        myPos = new Point3D(3.5f,0,15);
+        myPos = new Point3D(3.5f,1.5f,15);
         myScale = 0;
         myTerrain = terrain;
     }
@@ -61,20 +61,20 @@ public class Camera3D implements KeyListener {
         switch(e.getKeyCode()) {
         case KeyEvent.VK_LEFT:
          
-                rotX -= 10;                
+                rotX -= 5;                
             break;
             
         case KeyEvent.VK_RIGHT:
  
-                rotX += 10;                
+                rotX += 5;                
             break;
 
         case KeyEvent.VK_DOWN:
         	x = (float)Math.sin(Math.toRadians(rotX));
         	z = (float)Math.cos(Math.toRadians(rotX));
-        	alt = myTerrain.altitude(-x+myPos.getX(), z+myPos.getZ());
+        	alt = myTerrain.altitude(-x+myPos.getX(), z+myPos.getZ())+1.5f;
         	
-        	myPos = myPos.translate(-x,alt-myPos.getY(),z);
+        	myPos = myPos.translate(-x/5,alt-myPos.getY(),z/5);
         	System.out.println(myPos.getX());
         	System.out.println(myPos.getY());
         	System.out.println(myPos.getZ());
@@ -83,9 +83,9 @@ public class Camera3D implements KeyListener {
         case KeyEvent.VK_UP:
         	x = (float)Math.sin(Math.toRadians(rotX));
         	z = (float)Math.cos(Math.toRadians(rotX));
-        	alt = myTerrain.altitude(x+myPos.getX(), z+myPos.getZ());
+        	alt = myTerrain.altitude(x+myPos.getX(), z+myPos.getZ())+1.5f;
 
-        	myPos = myPos.translate(x,alt-myPos.getY(),-z);
+        	myPos = myPos.translate(x/5,alt-myPos.getY(),-z/5);
         	System.out.println(myPos.getX());
         	System.out.println(myPos.getY());
         	System.out.println(myPos.getZ());

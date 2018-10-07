@@ -22,6 +22,7 @@ import unsw.graphics.CoordFrame3D;
 import unsw.graphics.Matrix4;
 import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
+import unsw.graphics.Texture;
 import unsw.graphics.examples.person.Camera;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
@@ -48,7 +49,7 @@ public class World extends Application3D implements KeyListener {
     private TriangleMesh treeMesh;
     private Camera3D camera;
     private boolean useCamera;
-
+    Texture texture;
     public World(Terrain terrain) {
         super("Assignment 2", 800, 600);
         this.terrain = terrain;
@@ -72,23 +73,29 @@ public class World extends Application3D implements KeyListener {
     public void display(GL3 gl) {
         super.display(gl);
         CoordFrame3D frame;
+        Shader.setInt(gl, "tex", 0);
+        
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
 
-        // set sunlight direction
+        
+        
+        Shader.setPenColor(gl, Color.WHITE);
         Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
 
-        // set other light stuff
-        Shader.setColor(gl, "lightIntensity", Color.WHITE);
-        Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
-
-        // Set the material properties
-        Shader.setColor(gl, "ambientCoeff", Color.WHITE);
-        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
-        Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
-        Shader.setFloat(gl, "phongExp", 16f);
+//         set other light stuff
+          Shader.setColor(gl, "lightIntensity", Color.WHITE);
+          Shader.setColor(gl, "ambientIntensity", new Color(0.2f, 0.2f, 0.2f));
+//
+//        // Set the material properties
+          Shader.setColor(gl, "ambientCoeff", Color.WHITE);
+          Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+          Shader.setColor(gl, "specularCoeff", new Color(0.3f, 0.3f, 0.3f));
+          Shader.setFloat(gl, "phongExp", 16f);
 
         if (!useCamera) {
             // Bring everything into view by scaling down the world
-            Shader.setPenColor(gl, Color.BLACK);
+            Shader.setPenColor(gl, Color.WHITE);
             CoordFrame3D frame1 = CoordFrame3D.identity()
                     .translate(-2, -2f, -9)
                     .scale(0.5f, 0.5f, 0.5f);
@@ -100,7 +107,7 @@ public class World extends Application3D implements KeyListener {
             drawTerrain(gl, frame);
         }
 
-        rotationY += 1;
+        //rotationY += 1;
     }
 
     private void drawTerrain(GL3 gl, CoordFrame3D frame) {
@@ -137,6 +144,8 @@ public class World extends Application3D implements KeyListener {
         // shader
         Shader shader = new Shader(gl, "shaders/vertex_sunlight.glsl",
                 "shaders/fragment_sunlight.glsl");
+//        Shader shader = new Shader(gl, "shaders/vertex_tex_3d.glsl",
+//                "shaders/fragment_tex_3d.glsl");
         shader.use(gl);
 
         // terrain
@@ -176,7 +185,7 @@ public class World extends Application3D implements KeyListener {
 
         verticesName = names[0];
         indicesName = names[1];
-        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL3.GL_LINE);
+        //gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL3.GL_LINE);
 
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
         gl.glBufferData(GL.GL_ARRAY_BUFFER, vertexBuffer.capacity() * 3 * Float.BYTES,
@@ -197,12 +206,14 @@ public class World extends Application3D implements KeyListener {
             System.out.println(e.toString());
         }
         treeMesh.init(gl);
+        
+        texture = new Texture(gl, "res/textures/grass.bmp", "bmp", false);
     }
 
     @Override
     public void reshape(GL3 gl, int width, int height) {
         super.reshape(gl, width, height);
-        Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 1, 100));
+        Shader.setProjMatrix(gl, Matrix4.perspective(60, width/(float)height, 0.01f, 100));
     }
 
     @Override

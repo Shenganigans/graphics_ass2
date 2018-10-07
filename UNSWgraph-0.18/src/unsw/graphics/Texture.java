@@ -52,7 +52,6 @@ public class Texture {
         id = ids[0];
 
         gl.glBindTexture(GL.GL_TEXTURE_2D, id);
-
         // Build texture initialised with image data.
         gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, data.getInternalFormat(),
                 data.getWidth(), data.getHeight(), 0, data.getPixelFormat(),
