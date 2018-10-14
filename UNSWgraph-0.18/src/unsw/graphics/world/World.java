@@ -24,6 +24,8 @@ import unsw.graphics.Point3DBuffer;
 import unsw.graphics.Shader;
 import unsw.graphics.Texture;
 import unsw.graphics.examples.person.Camera;
+import unsw.graphics.geometry.LineStrip2D;
+import unsw.graphics.geometry.Point2D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 
@@ -47,14 +49,20 @@ public class World extends Application3D implements KeyListener {
     static ArrayList<Tree> allTrees;
     private final static float TREEHEIGHT = 2.5f;
     private TriangleMesh treeMesh;
+    private TriangleMesh modelMesh;
     private Camera3D camera;
+    private Camera3rD thirdCamera;
     private boolean useCamera;
-    Texture texture;
+    private boolean thirdPerson;
+    private Texture texture;
+    private Avatar avatar;
+    
     public World(Terrain terrain) {
         super("Assignment 2", 800, 600);
         this.terrain = terrain;
         camera = new Camera3D(terrain);
-
+        thirdCamera = new Camera3rD(camera);
+        avatar = new Avatar(camera.getLocation().getX(),camera.getLocation().getY(), camera.getLocation().getZ(), terrain);
     }
 
     /**
@@ -72,11 +80,12 @@ public class World extends Application3D implements KeyListener {
     @Override
     public void display(GL3 gl) {
         super.display(gl);
-        CoordFrame3D frame;
+        //CoordFrame3D frame;
         Shader.setInt(gl, "tex", 0);
         
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+        
 
         Shader.setPenColor(gl, Color.WHITE);
         Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
@@ -85,8 +94,8 @@ public class World extends Application3D implements KeyListener {
         Shader.setColor(gl, "lightIntensity", Color.WHITE);
         Shader.setColor(gl, "ambientIntensity", new Color(0.7f, 0.7f, 0.7f));
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
-        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
-        Shader.setFloat(gl, "phongExp", 1f);
+        Shader.setColor(gl, "diffuseCoeff", new Color(0.6f, 0.6f, 0.6f));
+        Shader.setFloat(gl, "phongExp", 15f);
 
         if (!useCamera) {
             // Bring everything into view by scaling down the world
@@ -96,16 +105,27 @@ public class World extends Application3D implements KeyListener {
                     .scale(0.5f, 0.5f, 0.5f);
             drawTerrain(gl, frame1);
         } else {
-            // Use a camera instead
-            camera.setView(gl);
-            frame = CoordFrame3D.identity();
-            drawTerrain(gl, frame);
+        	if(!thirdPerson) {
+	            // Use a camera instead
+	        	Shader.setPenColor(gl, Color.WHITE);
+	            camera.setView(gl);
+	            CoordFrame3D frame = CoordFrame3D.identity();
+	            drawTerrain(gl, frame);
+        	} else {
+        		// Use a camera instead
+	        	Shader.setPenColor(gl, Color.WHITE);
+	            thirdCamera.setView(gl);
+	            CoordFrame3D frame = CoordFrame3D.identity();
+	            drawTerrain(gl, frame);
+        		
+        	}
         }
 
         //rotationY += 1;
     }
 
     private void drawTerrain(GL3 gl, CoordFrame3D frame) {
+    	
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
         gl.glVertexAttribPointer(Shader.POSITION, 3, GL.GL_FLOAT, false, 0, 0);
 
@@ -114,13 +134,24 @@ public class World extends Application3D implements KeyListener {
         Shader.setModelMatrix(gl, frame.getMatrix());
         gl.glDrawElements(GL.GL_TRIANGLES, indicesBuffer.capacity(),
                 GL.GL_UNSIGNED_INT, 0);
-
+        terrainMesh.draw(gl, frame);
+        
+        modelMesh.draw(gl, frame);
+        CoordFrame3D aFrame = CoordFrame3D.identity()
+        		.translate(avatar.getPosition().getX(), avatar.getPosition().getY()-0.2f, avatar.getPosition().getZ())
+        		.rotateY(-90+avatar.getRotation());
+        modelMesh.draw(gl, aFrame);
+       
+        
         for (Tree t: terrain.trees()) {
-            Shader.setPenColor(gl, Color.BLACK);
+            Shader.setPenColor(gl, Color.WHITE);
             Point3D pos = t.getPosition();
             CoordFrame3D treeFrame = CoordFrame3D.identity().translate(pos.getX(), pos.getY() + TREEHEIGHT, pos.getZ()).scale(0.5f, 0.5f, 0.5f);
             treeMesh.draw(gl, treeFrame);
         }
+        
+      
+        
     }
 
     @Override
@@ -136,7 +167,7 @@ public class World extends Application3D implements KeyListener {
         super.init(gl);
         getWindow().addKeyListener(this);
         getWindow().addKeyListener(camera);
-
+        getWindow().addKeyListener(avatar);
         // shader
         Shader shader = new Shader(gl, "shaders/vertex_sunlight.glsl",
                 "shaders/fragment_sunlight.glsl");
@@ -202,6 +233,15 @@ public class World extends Application3D implements KeyListener {
             System.out.println(e.toString());
         }
         treeMesh.init(gl);
+        //model
+        
+        try {
+            modelMesh = new TriangleMesh("res/models/bunny.ply", true, true);
+        } catch (IOException e) {
+            System.out.println("Bunny Mesh failed to load :(");
+            System.out.println(e.toString());
+        }
+        modelMesh.init(gl);
         
         texture = new Texture(gl, "res/textures/grass.bmp", "bmp", false);
     }
@@ -220,6 +260,9 @@ public class World extends Application3D implements KeyListener {
             case KeyEvent.VK_SPACE:
                 useCamera ^= true;
                 break;
+            case KeyEvent.VK_V:
+            	thirdPerson ^= true;
+            	break;
         }
 
 
