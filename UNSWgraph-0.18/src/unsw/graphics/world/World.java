@@ -55,6 +55,8 @@ public class World extends Application3D implements KeyListener {
     private boolean useCamera;
     private boolean thirdPerson;
     private Texture texture;
+    private Texture texture2;
+    private Texture texture3;
     private Avatar avatar;
     
     public World(Terrain terrain) {
@@ -82,10 +84,6 @@ public class World extends Application3D implements KeyListener {
         super.display(gl);
         //CoordFrame3D frame;
         Shader.setInt(gl, "tex", 0);
-        
-        gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
-        
 
         Shader.setPenColor(gl, Color.WHITE);
         Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
@@ -125,7 +123,10 @@ public class World extends Application3D implements KeyListener {
     }
 
     private void drawTerrain(GL3 gl, CoordFrame3D frame) {
-    	
+
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, texture.getId());
+
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, verticesName);
         gl.glVertexAttribPointer(Shader.POSITION, 3, GL.GL_FLOAT, false, 0, 0);
 
@@ -135,22 +136,23 @@ public class World extends Application3D implements KeyListener {
         gl.glDrawElements(GL.GL_TRIANGLES, indicesBuffer.capacity(),
                 GL.GL_UNSIGNED_INT, 0);
         terrainMesh.draw(gl, frame);
-        
+
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, texture3.getId());
         modelMesh.draw(gl, frame);
         CoordFrame3D aFrame = CoordFrame3D.identity()
         		.translate(avatar.getPosition().getX(), avatar.getPosition().getY()-0.2f, avatar.getPosition().getZ())
         		.rotateY(-90+avatar.getRotation());
         modelMesh.draw(gl, aFrame);
-       
-        
+
+        gl.glActiveTexture(GL.GL_TEXTURE0);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, texture2.getId());
         for (Tree t: terrain.trees()) {
             Shader.setPenColor(gl, Color.WHITE);
             Point3D pos = t.getPosition();
             CoordFrame3D treeFrame = CoordFrame3D.identity().translate(pos.getX(), pos.getY() + TREEHEIGHT, pos.getZ()).scale(0.5f, 0.5f, 0.5f);
             treeMesh.draw(gl, treeFrame);
         }
-        
-      
         
     }
 
@@ -171,8 +173,6 @@ public class World extends Application3D implements KeyListener {
         // shader
         Shader shader = new Shader(gl, "shaders/vertex_sunlight.glsl",
                 "shaders/fragment_sunlight.glsl");
-//        Shader shader = new Shader(gl, "shaders/vertex_tex_3d.glsl",
-//                "shaders/fragment_tex_3d.glsl");
         shader.use(gl);
 
         // terrain
@@ -244,6 +244,8 @@ public class World extends Application3D implements KeyListener {
         modelMesh.init(gl);
         
         texture = new Texture(gl, "res/textures/grass.bmp", "bmp", false);
+        texture2 = new Texture(gl, "res/textures/rock.bmp", "bmp", false);
+        texture3 = new Texture(gl, "res/textures/sky.bmp", "bmp", false);
     }
 
     @Override
@@ -273,6 +275,5 @@ public class World extends Application3D implements KeyListener {
         // TODO Auto-generated method stub
 
     }
-
 
 }
