@@ -1,5 +1,5 @@
-# graphics_ass2
-Sheng An Zhang and Melissa Zhang
+# UNSW GRAPHICS ASSIGNMENT 2
+By Sheng An Zhang and Melissa Zhang
 
 #############################
 
