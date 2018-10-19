@@ -95,6 +95,7 @@ public class World extends Application3D implements KeyListener {
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
         Shader.setColor(gl, "diffuseCoeff", new Color(0.6f, 0.6f, 0.6f));
         Shader.setFloat(gl, "phongExp", 15f);
+        Shader.setInt(gl, "torchOn", 0);
 
         Shader.setPenColor(gl, Color.WHITE);
         if (!useCamera) {
@@ -112,8 +113,16 @@ public class World extends Application3D implements KeyListener {
         }
 
         if (nightTime) {
-//            Shader.setColor(gl, "lightIntensity", darkLightIntensity);
+            Shader.setColor(gl, "lightIntensity", darkLightIntensity);
             Shader.setColor(gl, "ambientIntensity", darkAmbientIntensity);
+            Shader.setPoint3D(gl, "torchPos", camera.getLocation());
+            Shader.setColor(gl, "torchAmbientIntensity", new Color(0.2f, 0.2f, 0.2f));
+            Shader.setColor(gl, "torchLightIntensity", new Color(0.2f, 0.2f, 0.2f));
+            Shader.setInt(gl,"torchOn", 1);
+            double cutoff = 12.5f;
+            Shader.setFloat(gl, "cutoff", (float) Math.cos(cutoff));
+            Shader.setFloat(gl, "attenuation", 64);
+
         }
         drawTerrain(gl, CoordFrame3D.identity());
     }
