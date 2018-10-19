@@ -1,5 +1,5 @@
 # graphics_ass2
-## Sheng An Zhang and Melissa Zhang
+Sheng An Zhang and Melissa Zhang
 
 #############################
 
