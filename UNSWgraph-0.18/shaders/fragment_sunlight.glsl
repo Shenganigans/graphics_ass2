@@ -32,7 +32,6 @@ in vec2 texCoordFrag;
 
 void main()
 {
-
     vec3 s = normalize(view_matrix*vec4(lightPos,0)).xyz;
     vec3 v = normalize(-viewPosition.xyz);
     vec3 r = normalize(reflect(-s,m));
@@ -50,7 +49,6 @@ void main()
     vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
     outputColor = input_color*texture(tex, texCoordFrag)*ambientAndDiffuse + vec4(specular,1);
-
 
     if (torchOn == 1) {
         // Compute the s, v and r vectors
@@ -71,7 +69,7 @@ void main()
             spotLight = 0;
         }
 
-        vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag);
+        vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular,1);
         outputColor += lightSrc * spotLight;
     }
 }
