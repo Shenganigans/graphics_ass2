@@ -12,6 +12,7 @@ uniform vec3 ambientIntensity;
 // Material properties
 uniform vec3 ambientCoeff;
 uniform vec3 diffuseCoeff;
+uniform vec3 specularCoeff;
 uniform float phongExp;
 
 // Torch properties
@@ -31,17 +32,24 @@ in vec2 texCoordFrag;
 
 void main()
 {
-    // Compute the s, v and r vectors*vec4(lightPos,1) - viewPosition)
-    vec3 s = normalize(view_matrix*vec4(lightPos,1) - viewPosition).xyz;
+
+    vec3 s = normalize(view_matrix*vec4(lightPos,0)).xyz;
     vec3 v = normalize(-viewPosition.xyz);
     vec3 r = normalize(reflect(-s,m));
 
     vec3 ambient = ambientIntensity*ambientCoeff;
     vec3 diffuse = max(lightIntensity*diffuseCoeff*dot(m,s), 0.0);
-    vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1)*2; // make it a bit brighter
+    vec3 specular;
 
-    // no specular light
-    outputColor = input_color*texture(tex, texCoordFrag)*ambientAndDiffuse;
+    // Only show specular reflections for the front face
+    if (dot(m,s) > 0)
+        specular = max(lightIntensity*specularCoeff*pow(dot(r,v),phongExp), 0.0);
+    else
+        specular = vec3(0);
+
+    vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
+
+    outputColor = input_color*texture(tex, texCoordFrag)*ambientAndDiffuse + vec4(specular,1);
 
 
     if (torchOn == 1) {
