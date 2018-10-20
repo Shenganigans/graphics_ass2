@@ -1,5 +1,14 @@
 # UNSW Graphics
 
+#############################
+
+Assignment 2:
+Press space bar to enter camera view
+Press v to enter third person view
+Use arrow keys to navigate around screen
+
+#############################
+
 This library is being written as part of the Computer Graphics course at UNSW.
 
 If you wish to fork it to work on assignments, please ensure that you fork it into a **private** repository. GitHub offers free private repositories as part of it's student developer pack, available [here](https://education.github.com/pack).

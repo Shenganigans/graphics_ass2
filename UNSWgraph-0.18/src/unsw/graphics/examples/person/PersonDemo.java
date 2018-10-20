@@ -63,7 +63,7 @@ public class PersonDemo extends Application2D implements KeyListener {
         person.draw(gl,frame);
         
         //Draw the camera so we can see it if we're not using a camera view
-        //camera.draw(gl, frame);
+        camera.draw(gl, frame);
     }
     
     @Override

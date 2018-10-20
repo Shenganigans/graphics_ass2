@@ -37,6 +37,9 @@ public class Camera3D implements KeyListener {
                 .scale(myScale, myScale, myScale);
        
     }
+    public float rotation() {
+    	return rotX;
+    }
 
     /**
      * Set the view transform
@@ -52,7 +55,9 @@ public class Camera3D implements KeyListener {
                 .translate(-myPos.getX(), -myPos.getY(), -myPos.getZ());
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
     }
-
+    public Point3D getLocation() {
+    	return myPos;
+    }
     @Override
     public void keyPressed(KeyEvent e) {
     	float x;
@@ -90,6 +95,7 @@ public class Camera3D implements KeyListener {
         	System.out.println(myPos.getY());
         	System.out.println(myPos.getZ());
             break;
+     
         }
 
     }

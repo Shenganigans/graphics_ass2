@@ -32,10 +32,14 @@ public class BezierInterpolate extends Application2D implements KeyListener {
         super("Quadratic bezier interpolation", 600, 600);
         currentPoint = 0;
         controlPoints = new Point2D[] {
-            new Point2D(0, 0.5f),
-            new Point2D(-1,1.5f),
-            new Point2D(0, 2.5f),
-            new Point2D(-1,4f)
+            new Point2D(1.5f, 3f),
+            new Point2D(1.5f,0.5f),
+            new Point2D(7.5f, 1.5f),
+            new Point2D(7.5f,1.5f)
+//            1.5, 3,
+//            1.5, 0.5,
+//            7.5, 1.5,
+//            7.5, 1.5
         };
         segments = 32;
     }
@@ -70,7 +74,7 @@ public class BezierInterpolate extends Application2D implements KeyListener {
     public void display(GL3 gl) {
     	super.display(gl);
     	
-    	Shader.setViewMatrix(gl, Matrix3.scale(0.2f, 0.2f));
+    	Shader.setViewMatrix(gl, Matrix3.scale(0.1f, 0.1f));
         
     	Shader.setPenColor(gl, Color.RED);
     	controlPoints[0].draw(gl);
