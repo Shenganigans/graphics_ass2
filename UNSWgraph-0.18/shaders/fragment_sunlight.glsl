@@ -31,19 +31,17 @@ in vec2 texCoordFrag;
 
 void main()
 {
-    vec3 light = vec3(lightPos[0], 0, 0);
-    // Compute the s, v and r vectors
-    vec3 s = normalize(view_matrix*vec4(light,1) - viewPosition).xyz;
+    // Compute the s, v and r vectors*vec4(lightPos,1) - viewPosition)
+    vec3 s = normalize(view_matrix*vec4(lightPos,1) - viewPosition).xyz;
     vec3 v = normalize(-viewPosition.xyz);
     vec3 r = normalize(reflect(-s,m));
 
     vec3 ambient = ambientIntensity*ambientCoeff;
     vec3 diffuse = max(lightIntensity*diffuseCoeff*dot(m,s), 0.0);
-    vec3 specular = vec3(0);
+    vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1)*2; // make it a bit brighter
 
-    vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
-
-    outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
+    // no specular light
+    outputColor = input_color*texture(tex, texCoordFrag)*ambientAndDiffuse;
 
 
     if (torchOn == 1) {
@@ -54,19 +52,18 @@ void main()
 
         vec3 ambient = torchAmbientIntensity*ambientCoeff;
         vec3 diffuse = max(torchLightIntensity*diffuseCoeff*dot(m,s), 0.0);
-        vec3 specular = vec3(0);
 
         vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
 
-        float spotD = dot(-s, vec3(0, 0, -1));
-        float spotAtt;
-        if(spotD > cutoff){
-            spotAtt = pow(spotD, attenuation);
+        float spotDot = dot(-s, vec3(0, 0, -1));
+        float spotLight;
+        if(spotDot > cutoff){
+            spotLight = pow(spotDot, attenuation);
         } else {
-            spotAtt=0;
+            spotLight = 0;
         }
 
-        vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
-        outputColor += lightSrc * spotAtt;
+        vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag);
+        outputColor += lightSrc * spotLight;
     }
 }

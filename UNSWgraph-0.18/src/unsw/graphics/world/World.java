@@ -48,7 +48,7 @@ public class World extends Application3D implements KeyListener {
     float rotationX = 0;
     static ArrayList<Tree> allTrees;
     private final static Color darkLightIntensity = new Color(0.3f, 0.3f, 0.3f);
-    private final static Color darkAmbientIntensity = new Color(0.7f, 0.7f, 0.7f);
+    private final static Color darkAmbientIntensity = new Color(0.2f, 0.2f, 0.2f);
     private TriangleMesh treeMesh;
     private TriangleMesh modelMesh;
     private Camera3D camera;
@@ -91,10 +91,11 @@ public class World extends Application3D implements KeyListener {
 
         // set lighting coordinates for sunlight
         Shader.setColor(gl, "lightIntensity", Color.WHITE);
-        Shader.setColor(gl, "ambientIntensity", new Color(0.8f, 0.8f, 0.8f));
+        Shader.setColor(gl, "ambientIntensity", new Color(0.3f, 0.3f, 0.3f));
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
-        Shader.setColor(gl, "diffuseCoeff", new Color(0.6f, 0.6f, 0.6f));
-        Shader.setFloat(gl, "phongExp", 15f);
+        Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
+        Shader.setColor(gl, "specularCoeff", new Color(0.8f, 0.8f, 0.8f));
+        Shader.setFloat(gl, "phongExp", 1f);
         Shader.setInt(gl, "torchOn", 0);
 
         // set lighting coordinates for cook torrence
@@ -120,7 +121,6 @@ public class World extends Application3D implements KeyListener {
 
         if (nightTime) {
             Shader.setColor(gl, "lightIntensity", darkLightIntensity);
-            Shader.setColor(gl, "ambientIntensity", darkAmbientIntensity);
             Shader.setPoint3D(gl, "torchPos", camera.getLocation());
             Shader.setColor(gl, "torchAmbientIntensity", new Color(0.2f, 0.2f, 0.2f));
             Shader.setColor(gl, "torchLightIntensity", new Color(0.2f, 0.2f, 0.2f));
