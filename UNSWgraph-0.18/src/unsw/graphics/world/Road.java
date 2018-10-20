@@ -1,8 +1,14 @@
 package unsw.graphics.world;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import unsw.graphics.Matrix4;
+import unsw.graphics.Vector3;
+import unsw.graphics.Vector4;
 import unsw.graphics.geometry.Point2D;
+import unsw.graphics.geometry.Point3D;
+import unsw.graphics.geometry.TriangleMesh;
 
 /**
  * COMMENT: Comment Road 
@@ -13,6 +19,7 @@ public class Road {
 
     private List<Point2D> points;
     private float width;
+    private Point3D point;
     
     /**
      * Create a new road with the specified spine 
@@ -52,7 +59,60 @@ public class Road {
     public Point2D controlPoint(int i) {
         return points.get(i);
     }
-    
+   public TriangleMesh createRoad(Road r, float altitude, int num) {
+	   ArrayList<Point3D> mainRoad = new ArrayList<Point3D>();
+	   ArrayList<Point3D> abovePoints = new ArrayList<Point3D>();
+	   ArrayList<Point3D> belowPoints = new ArrayList<Point3D>();
+	   ArrayList<Point3D> allPoints = new ArrayList<Point3D>();
+	   ArrayList<Integer> index = new ArrayList<Integer>();
+	   
+	   float dt = 1.0f/32;
+	   if(point != null) {
+		   mainRoad.add(point);
+	   }
+	   for(int i = 0; i<32; i++) {
+		   float t = i*dt;
+		   mainRoad.add(new Point3D(point(t+num).getX(), altitude , point(t+num).getY()));
+	   }
+	   point = mainRoad.get(mainRoad.size()-1);
+	   for(int i = 0; i<=mainRoad.size()-1; i++) {
+		   Point3D a;
+		   Point3D b;
+		   Vector3 c;
+		   Matrix4 rot90 = Matrix4.rotationY(90);
+		   Matrix4 rot270 = Matrix4.rotationY(270);
+		   if(i == mainRoad.size()-1) {
+			   a = mainRoad.get(i);
+			   b = mainRoad.get(i-1);
+			   c = a.minus(b).normalize().scale(width/2);
+		   }else {
+			   a = mainRoad.get(i+1);
+			   b = mainRoad.get(i);
+			   c = a.minus(b).normalize().scale(width/2);
+		   }
+		   Vector4 d = new Vector4(c.getX(),c.getY(),c.getZ(),0);
+		   
+		   abovePoints.add(mainRoad.get(i).translate(rot90.multiply(d).trim()));
+		   belowPoints.add(mainRoad.get(i).translate(rot270.multiply(d).trim()));
+	   }
+	   allPoints.addAll(abovePoints);
+	   allPoints.addAll(belowPoints);
+	   for(int j = 0; j<mainRoad.size()-1;j++) {
+		   int tl = j;
+		   int tr = j+1;
+		   int bl = j+mainRoad.size();
+		   int br = j+mainRoad.size()+1;
+		   
+		   index.add(tr);
+		   index.add(tl);
+		   index.add(bl);
+		   index.add(tr);
+		   index.add(bl);
+		   index.add(br);
+	   }
+	   TriangleMesh tm = new TriangleMesh(allPoints, index, true);
+	   return tm;
+    }
     /**
      * Get a point on the spine. The parameter t may vary from 0 to size().
      * Points on the kth segment take have parameters in the range (k, k+1).
@@ -60,6 +120,7 @@ public class Road {
      * @param t
      * @return
      */
+ 
     public Point2D point(float t) {
         int i = (int)Math.floor(t);
         t = t - i;
