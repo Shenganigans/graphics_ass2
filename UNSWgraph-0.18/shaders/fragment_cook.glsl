@@ -12,7 +12,14 @@ uniform vec3 ambientIntensity;
 // Material properties
 uniform vec3 ambientCoeff;
 uniform vec3 diffuseCoeff;
-uniform float phongExp;
+
+// Torch properties
+uniform float cutoff;
+uniform float attenuation;
+uniform vec3 torchPos;
+uniform int torchOn;
+uniform vec3 torchAmbientIntensity;
+uniform vec3 torchLightIntensity;
 
 uniform sampler2D tex;
 
@@ -74,8 +81,6 @@ void main() {
         float distance = length(light[i] - globalPosition);
         float attenuation = 1.0 / (distance * distance);
 
-//       vec3 radiance = lightColors[i] * attenuation;
-
        // cook-torrance brdf
        float NDF = DistributionGGX(m, H, 1);
        float G   = GeometrySmith(m, vec3(viewPosition), vec3(L), 1);
@@ -101,4 +106,28 @@ void main() {
     color = pow(color, vec3(1.0/2.2));
 
     outputColor = vec4(color, 1.0) + input_color*texture(tex, texCoordFrag);
+
+    if (torchOn == 1) {
+        // Compute the s, v and r vectors
+        vec3 s = normalize(view_matrix*vec4(torchPos,1) - viewPosition).xyz;
+        vec3 v = normalize(-viewPosition.xyz);
+        vec3 r = normalize(reflect(-s,m));
+
+        vec3 ambient = torchAmbientIntensity*ambientCoeff;
+        vec3 diffuse = max(torchLightIntensity*diffuseCoeff*dot(m,s), 0.0);
+        vec3 specular = vec3(0);
+
+        vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
+
+        float spotD = dot(-s, vec3(0, 0, -1));
+        float spotAtt;
+        if(spotD > cutoff){
+            spotAtt = pow(spotD, attenuation);
+        } else {
+            spotAtt=0;
+        }
+
+        vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
+        outputColor += lightSrc * spotAtt;;
+    }
 }

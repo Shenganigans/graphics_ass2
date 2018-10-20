@@ -45,7 +45,6 @@ void main()
 
     outputColor = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
 
-    vec4 torchOutputColor = vec4(0);
 
     if (torchOn == 1) {
         // Compute the s, v and r vectors
@@ -68,7 +67,6 @@ void main()
         }
 
         vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular, 1);
-        torchOutputColor = lightSrc * spotAtt;
-        outputColor += torchOutputColor;
+        outputColor += lightSrc * spotAtt;
     }
 }

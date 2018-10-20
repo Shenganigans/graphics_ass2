@@ -89,13 +89,19 @@ public class World extends Application3D implements KeyListener {
         Shader.setPenColor(gl, Color.WHITE);
         Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
 
-        // set lighting coordinates
+        // set lighting coordinates for sunlight
         Shader.setColor(gl, "lightIntensity", Color.WHITE);
         Shader.setColor(gl, "ambientIntensity", new Color(0.8f, 0.8f, 0.8f));
         Shader.setColor(gl, "ambientCoeff", Color.WHITE);
         Shader.setColor(gl, "diffuseCoeff", new Color(0.6f, 0.6f, 0.6f));
         Shader.setFloat(gl, "phongExp", 15f);
         Shader.setInt(gl, "torchOn", 0);
+
+        // set lighting coordinates for cook torrence
+//        Shader.setColor(gl, "lightIntensity", Color.BLACK);
+//        Shader.setColor(gl, "ambientIntensity", Color.BLACK);
+//        Shader.setColor(gl, "ambientCoeff", Color.BLACK);
+//        Shader.setColor(gl, "diffuseCoeff", Color.BLACK);
 
         Shader.setPenColor(gl, Color.WHITE);
         if (!useCamera) {
@@ -255,7 +261,6 @@ public class World extends Application3D implements KeyListener {
     }
 
     @Override
-
     public void keyPressed(KeyEvent e) {
         switch(e.getKeyCode()) {
 
@@ -269,14 +274,11 @@ public class World extends Application3D implements KeyListener {
                 nightTime ^= true;
                 break;
         }
-
-
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         // TODO Auto-generated method stub
-
     }
 
 }
