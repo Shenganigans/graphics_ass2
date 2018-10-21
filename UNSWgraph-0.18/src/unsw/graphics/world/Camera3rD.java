@@ -56,7 +56,7 @@ public class Camera3rD{
         		.rotateX(0).rotateY(rot).rotateZ(0)
 
                 //.translate(-x, -y, -z);
-        		.translate((float)-x+(float)Math.sin(Math.toRadians(rot)), -y, (float)-z-(float)Math.cos(Math.toRadians(rot)));
+        		.translate((float)-x+2*(float)Math.sin(Math.toRadians(rot)), -y, (float)-z-2*(float)Math.cos(Math.toRadians(rot)));
         Shader.setViewMatrix(gl, viewFrame.getMatrix());
     }
     

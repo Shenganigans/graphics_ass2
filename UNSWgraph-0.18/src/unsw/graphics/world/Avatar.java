@@ -47,7 +47,7 @@ public class Avatar implements KeyListener{
         case KeyEvent.VK_DOWN:
         	x = (float)Math.sin(Math.toRadians(rot));
         	z = (float)Math.cos(Math.toRadians(rot));
-        	alt = myTerrain.altitude(x+position.getX(), -z+position.getZ())+1.5f;
+        	alt = myTerrain.altitude(x+position.getX(), z+position.getZ())+1.5f;
         	
         	position = position.translate(x/5,alt-position.getY(),z/5);
         	System.out.println(position.getX());

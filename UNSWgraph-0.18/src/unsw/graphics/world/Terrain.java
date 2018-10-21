@@ -28,6 +28,7 @@ public class Terrain {
     private float[][] altitudes;
     private List<Tree> trees;
     private List<Road> roads;
+    private List<Pond> ponds;
     private Vector3 sunlight;
 
     /**
@@ -42,6 +43,7 @@ public class Terrain {
         altitudes = new float[width][depth];
         trees = new ArrayList<Tree>();
         roads = new ArrayList<Road>();
+        ponds = new ArrayList<Pond>();
         this.sunlight = sunlight;
     }
 
@@ -51,6 +53,9 @@ public class Terrain {
 
     public List<Road> roads() {
         return roads;
+    }
+    public List<Pond> ponds() {
+        return ponds;
     }
 
     public Vector3 getSunlight() {
@@ -172,6 +177,13 @@ public class Terrain {
     public int getDepth() {
         return depth;
     }
+
+	public void addPond(float x, float z, float radius) {
+		float a = altitude(x, z);
+		Pond pond = new Pond(radius, new Point3D(x,a,z));
+		ponds.add(pond);
+		
+	}
 
 
 }

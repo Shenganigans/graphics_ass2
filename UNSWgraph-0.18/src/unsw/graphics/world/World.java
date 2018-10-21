@@ -60,6 +60,9 @@ public class World extends Application3D implements KeyListener {
     private Texture texture;
     private Texture texture2;
     private Texture texture3;
+    private Texture water1;
+    private Texture water2;
+    private Texture water3;
     private Avatar avatar;
     
     public World(Terrain terrain) {
@@ -152,7 +155,7 @@ public class World extends Application3D implements KeyListener {
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture3.getId());
         modelMesh.draw(gl, frame);
         CoordFrame3D aFrame = CoordFrame3D.identity()
-        		.translate(avatar.getPosition().getX(), avatar.getPosition().getY()-0.2f, avatar.getPosition().getZ())
+        		.translate(avatar.getPosition().getX(), avatar.getPosition().getY()-0.8f, avatar.getPosition().getZ())
         		.rotateY(-90+avatar.getRotation());
         modelMesh.draw(gl, aFrame);
 
@@ -163,7 +166,23 @@ public class World extends Application3D implements KeyListener {
         for (TriangleMesh r: roadMeshes) {
         	r.draw(gl, frame);
         }
-        
+        for (Pond p: terrain.ponds()) {
+        	System.out.println("FDdf");
+        	int t = (int) (System.currentTimeMillis() % 15);
+        	if(t<5) {
+        		gl.glBindTexture(GL.GL_TEXTURE_2D, water1.getId());
+        		System.out.println("FDdf");
+        		p.getMesh(p).draw(gl,frame);
+        	}else if(t<10){
+        		gl.glBindTexture(GL.GL_TEXTURE_2D, water2.getId());
+        		System.out.println("FDdf");
+        		p.getMesh(p).draw(gl,frame);
+        	}else {
+        		gl.glBindTexture(GL.GL_TEXTURE_2D, water3.getId());
+        		System.out.println("FDdf");
+        		p.getMesh(p).draw(gl,frame);
+        	}
+        }
         
     }
 
@@ -261,6 +280,10 @@ public class World extends Application3D implements KeyListener {
         texture2 = new Texture(gl, "res/textures/rock.bmp", "bmp", false);
         texture3 = new Texture(gl, "res/textures/sky.bmp", "bmp", false);
         
+        water1 = new Texture(gl, "res/textures/1.png", "png", false);
+        water2 = new Texture(gl, "res/textures/2.png", "png", false);
+        water3 = new Texture(gl, "res/textures/3.png", "png", false);
+        
         for (Road r: terrain.roads()) {
         	for(int w =0; w<r.size(); w++) {
 	        	float altitude = terrain.altitude(r.controlPoint(0).getX(), r.controlPoint(0).getY());
@@ -268,6 +291,9 @@ public class World extends Application3D implements KeyListener {
 	        	roadMesh.init(gl);
 	        	roadMeshes.add(roadMesh);
         	}
+        }
+        for (Pond p: terrain.ponds()) {
+        	p.getMesh(p).init(gl);
         }
     }
 
