@@ -161,7 +161,7 @@ public class World extends Application3D implements KeyListener {
         terrainMesh.draw(gl, frame);
 
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture3.getId());
-        modelMesh.draw(gl, frame);
+        //modelMesh.draw(gl, frame);
         CoordFrame3D aFrame = CoordFrame3D.identity()
         		.translate(avatar.getPosition().getX(), avatar.getPosition().getY()-0.8f, avatar.getPosition().getZ())
         		.rotateY(-90+avatar.getRotation());
