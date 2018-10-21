@@ -5,7 +5,6 @@ import unsw.graphics.CoordFrame3D;
 import unsw.graphics.geometry.Point3D;
 import unsw.graphics.geometry.TriangleMesh;
 
-import java.io.IOException;
 
 /**
  * COMMENT: Comment Tree 
@@ -15,7 +14,6 @@ import java.io.IOException;
 public class Tree {
 
     private Point3D position;
-    private TriangleMesh treeMesh;
     private final static float TREEHEIGHT = 2.5f;
 
     public Tree(float x, float y, float z) {

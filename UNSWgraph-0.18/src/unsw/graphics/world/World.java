@@ -51,6 +51,7 @@ public class World extends Application3D implements KeyListener {
     private final static Color darkAmbientIntensity = new Color(0.2f, 0.2f, 0.2f);
     private TriangleMesh treeMesh;
     private TriangleMesh modelMesh;
+    private ArrayList<TriangleMesh> roadMeshes = new ArrayList<TriangleMesh>();
     private Camera3D camera;
     private Camera3rD thirdCamera;
     private boolean useCamera;
@@ -96,6 +97,7 @@ public class World extends Application3D implements KeyListener {
         Shader.setColor(gl, "diffuseCoeff", new Color(0.5f, 0.5f, 0.5f));
         Shader.setColor(gl, "specularCoeff", new Color(0.01f, 0.01f, 0.01f));
         Shader.setFloat(gl, "phongExp", 1f);
+
         Shader.setInt(gl, "torchOn", 0);
 
         // set lighting coordinates for cook torrence
@@ -103,6 +105,8 @@ public class World extends Application3D implements KeyListener {
 //        Shader.setColor(gl, "ambientIntensity", Color.BLACK);
 //        Shader.setColor(gl, "ambientCoeff", Color.BLACK);
 //        Shader.setColor(gl, "diffuseCoeff", Color.BLACK);
+//        Shader.setColor(gl, "specularCoeff", new Color(0.01f, 0.01f, 0.01f));
+//        Shader.setFloat(gl, "phongExp", 1f);
 
         Shader.setPenColor(gl, Color.WHITE);
         if (!useCamera) {
@@ -156,6 +160,10 @@ public class World extends Application3D implements KeyListener {
         for (Tree t: terrain.trees()) {
             t.drawTree(gl, treeMesh);
         }
+        for (TriangleMesh r: roadMeshes) {
+        	r.draw(gl, frame);
+        }
+        
         
     }
 
@@ -252,6 +260,15 @@ public class World extends Application3D implements KeyListener {
         texture = new Texture(gl, "res/textures/grass.bmp", "bmp", false);
         texture2 = new Texture(gl, "res/textures/rock.bmp", "bmp", false);
         texture3 = new Texture(gl, "res/textures/sky.bmp", "bmp", false);
+        
+        for (Road r: terrain.roads()) {
+        	for(int w =0; w<r.size(); w++) {
+	        	float altitude = terrain.altitude(r.controlPoint(0).getX(), r.controlPoint(0).getY());
+	        	TriangleMesh roadMesh = r.createRoad(r, altitude+0.01f, w);
+	        	roadMesh.init(gl);
+	        	roadMeshes.add(roadMesh);
+        	}
+        }
     }
 
     @Override
