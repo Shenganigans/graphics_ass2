@@ -52,14 +52,13 @@ void main()
 
     if (torchOn == 1) {
         // Compute the s, v and r vectors
-        vec3 s = normalize(view_matrix*vec4(torchPos,1) - viewPosition).xyz;
-        vec3 v = normalize(-viewPosition.xyz);
-        vec3 r = normalize(reflect(-s,m));
+        s = normalize(view_matrix*vec4(torchPos,1) - viewPosition).xyz;
 
-        vec3 ambient = torchAmbientIntensity*ambientCoeff;
-        vec3 diffuse = max(torchLightIntensity*diffuseCoeff*dot(m,s), 0.0);
+        ambient = torchAmbientIntensity*ambientCoeff;
+        diffuse = max(torchLightIntensity*diffuseCoeff*dot(m,s), 0.0);
 
-        vec4 ambientAndDiffuse = vec4(ambient + diffuse, 1);
+        float d = length((view_matrix*vec4(torchPos,1) - viewPosition).xyz);
+        float att = 1.0 / (1.0 + attenuation * pow(d, 2));
 
         float spotDot = dot(-s, vec3(0, 0, -1));
         float spotLight;
@@ -69,7 +68,11 @@ void main()
             spotLight = 0;
         }
 
-        vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular,1);
+        att *= spotLight;
+
+        vec4 ambientAndDiffuse = vec4(ambient + diffuse*att, 1);
+
+        vec4 lightSrc = ambientAndDiffuse*input_color*texture(tex, texCoordFrag) + vec4(specular*att,1);
         outputColor += lightSrc * spotLight;
     }
 }
