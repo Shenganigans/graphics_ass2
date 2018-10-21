@@ -131,7 +131,7 @@ public class World extends Application3D implements KeyListener {
             Shader.setInt(gl,"torchOn", 1);
             double cutoff = 12.5f;
             Shader.setFloat(gl, "cutoff", (float) Math.cos(cutoff));
-            Shader.setFloat(gl, "attenuation", 64);
+            Shader.setFloat(gl, "attenuation", 600);
 
         }
         drawTerrain(gl, CoordFrame3D.identity());
@@ -163,8 +163,6 @@ public class World extends Application3D implements KeyListener {
         for (TriangleMesh r: roadMeshes) {
         	r.draw(gl, frame);
         }
-        
-        
     }
 
     @Override
