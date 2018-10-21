@@ -50,6 +50,11 @@ public class World extends Application3D implements KeyListener {
     private boolean useCamera;
     private boolean thirdPerson;
     private boolean nightTime;
+    private boolean moveSun;
+    private boolean morning;
+    private Point3D startSun = new Point3D(-1, 0, 0);
+    private float sunMovementX;
+    private float sunMovementY;
     private Texture texture;
     private Texture texture2;
     private Texture texture3;
@@ -81,7 +86,6 @@ public class World extends Application3D implements KeyListener {
         Shader.setInt(gl, "tex", 0);
 
         Shader.setPenColor(gl, Color.WHITE);
-        Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
 
         // set lighting coordinates for sunlight
         Shader.setColor(gl, "lightIntensity", Color.WHITE);
@@ -116,10 +120,29 @@ public class World extends Application3D implements KeyListener {
             Shader.setInt(gl,"torchOn", 1);
             double cutoff = 12.5f;
             Shader.setFloat(gl, "cutoff", (float) Math.cos(cutoff));
-            Shader.setFloat(gl, "attenuation", 600); // set to lower for a brighter light
+            Shader.setFloat(gl, "attenuation", 500); // set to lower for a brighter light
 
         }
         drawTerrain(gl, CoordFrame3D.identity());
+
+        if (moveSun) {
+            Point3D sunlightSpot = startSun.translate(sunMovementX, sunMovementY, 0);
+            Shader.setPoint3D(gl, "lightPos", sunlightSpot);
+            sunMovementX += 0.02;
+
+            if (morning) sunMovementY += 0.01;
+            else sunMovementY -= 0.01;
+
+            if (sunMovementY > 1.0f) morning = false;
+
+            if (sunMovementX > 4.0f) {
+                sunMovementX = -1;
+                sunMovementY = 0;
+                morning = true;
+            }
+        } else {
+            Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
+        }
     }
 
     private void drawTerrain(GL3 gl, CoordFrame3D frame) {
@@ -169,6 +192,10 @@ public class World extends Application3D implements KeyListener {
         Shader shader = new Shader(gl, "shaders/vertex_sunlight.glsl",
                 "shaders/fragment_sunlight.glsl");
         shader.use(gl);
+        Shader.setPoint3D(gl, "lightPos", terrain.getSunlight().asPoint3D());
+        sunMovementX = 0.0f;
+        sunMovementY = 0.0f;
+        morning = true;
 
         // terrain
         int i = 0;
@@ -272,6 +299,9 @@ public class World extends Application3D implements KeyListener {
             	break;
             case KeyEvent.VK_N:
                 nightTime ^= true;
+                break;
+            case KeyEvent.VK_S:
+                moveSun ^= true;
                 break;
         }
     }
