@@ -65,6 +65,7 @@ public class Road {
 	   ArrayList<Point3D> belowPoints = new ArrayList<Point3D>();
 	   ArrayList<Point3D> allPoints = new ArrayList<Point3D>();
 	   ArrayList<Integer> index = new ArrayList<Integer>();
+	   ArrayList<Point2D> texCoords = new ArrayList<Point2D>();
 	   
 	   float dt = 1.0f/32;
 	   if(point != null) {
@@ -93,7 +94,9 @@ public class Road {
 		   Vector4 d = new Vector4(c.getX(),c.getY(),c.getZ(),0);
 		   
 		   abovePoints.add(mainRoad.get(i).translate(rot90.multiply(d).trim()));
+		   texCoords.add(new Point2D(mainRoad.get(i).translate(rot90.multiply(d).trim()).getX(),mainRoad.get(i).translate(rot90.multiply(d).trim()).getZ()));	        
 		   belowPoints.add(mainRoad.get(i).translate(rot270.multiply(d).trim()));
+		   texCoords.add(new Point2D(mainRoad.get(i).translate(rot270.multiply(d).trim()).getX(),mainRoad.get(i).translate(rot270.multiply(d).trim()).getZ()));
 	   }
 	   allPoints.addAll(abovePoints);
 	   allPoints.addAll(belowPoints);
@@ -110,7 +113,9 @@ public class Road {
 		   index.add(bl);
 		   index.add(br);
 	   }
-	   TriangleMesh tm = new TriangleMesh(allPoints, index, true);
+	   
+	   
+	   TriangleMesh tm = new TriangleMesh(allPoints, index, true, texCoords);
 	   return tm;
     }
     /**
